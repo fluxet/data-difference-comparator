@@ -1,0 +1,1 @@
+This cli utilite compares two configuration files and shows a difference.
