@@ -2,12 +2,11 @@
 
 import program from 'commander';
 import _ from 'lodash';
-import fs from 'fs';
-import yaml from 'js-yaml';
+import parse from './parse';
 
 const diff = (path1, path2) => {
-  const obj1 = JSON.parse(fs.readFileSync(path1, 'utf-8'));
-  const obj2 = JSON.parse(fs.readFileSync(path2, 'utf-8'));
+  const obj1 = parse(path1);
+  const obj2 = parse(path2);
   const keys1 = Object.keys(obj1);
   const keys2 = Object.keys(obj2);
 
@@ -39,6 +38,3 @@ program.on('--help', () => {
 program.parse(process.argv);
 
 export default diff;
-
-const inputYaml = yaml.safeLoad(fs.readFileSync('/home/fluxet/study/trash/before.json'));
-console.log(inputYaml.parser);
