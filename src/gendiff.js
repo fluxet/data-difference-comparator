@@ -5,26 +5,67 @@ import _ from 'lodash';
 import parse from './parse';
 
 const diff = (path1, path2) => {
-  const obj1 = parse(path1);
-  const obj2 = parse(path2);
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
+  const objBefore = parse(path1);
+  const objAfter = parse(path2);
 
-  const propStr = (obj, key, pre) => ` ${pre} ${key} : ${obj[key]}\n`;
+  const status = {
+    del: 'del',
+    add: 'add',
+    same: 'same',
+  };
+  const propState = (name, value, stat) => ({ name, value, stat });
 
-  const keysDelited = _.difference(keys1, keys2);
-  const keysAdded = _.difference(keys2, keys1);
-  const keysCommon = _.difference(keys1, [...keysDelited, ...keysAdded]);
+  const makeState = (obj1, obj2) => {
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
 
-  const propsDelited = keysDelited.map((key) => propStr(obj1, key, '-'));
-  const propsAdded = keysAdded.map((key) => propStr(obj2, key, '+'));
-  const propsCommon = keysCommon.map((key) => {
-    const result = (obj1[key] === obj2[key])
-      ? propStr(obj1, key, ' ')
-      : `${propStr(obj1, key, '-')}${propStr(obj2, key, '+')}`;
-    return result;
-  });
-  return `{\n${[...propsCommon, ...propsDelited, ...propsAdded].join('')}}`;
+    const keysDelited = _.difference(keys1, keys2);
+    const keysAdded = _.difference(keys2, keys1);
+    const keysCommon = _.difference(keys1, [...keysDelited, ...keysAdded]);
+
+    const propsDelited = keysDelited.map((key) => propState(key, obj1[key], status.del));
+    const propsAdded = keysAdded.map((key) => propState(key, obj2[key], status.add));
+    const propsCommon = keysCommon.map((key) => {
+      if (_.isEqual(obj1[key], obj2[key])) {
+        return propState(key, obj1[key], status.same);
+      }
+      if (_.isPlainObject(obj1[key]) && _.isPlainObject(obj2[key])) {
+        return propState(key, makeState(obj1[key], obj2[key]), status.same);
+      }
+      return [
+        propState(key, obj1[key], status.del),
+        propState(key, obj2[key], status.add),
+      ];
+    });
+
+    return [..._.flatten(propsCommon), ...propsDelited, ...propsAdded];
+  };
+  //------------------------------------------------------------------------------
+  const spaceNumber = 4;
+  const tab0 = ' '.repeat(spaceNumber);
+  const statusToStr = { del: '  - ', add: '  + ', same: tab0 };
+
+  const myStringify = (val, tab) => {
+    const newVal = JSON.stringify(val, null, spaceNumber)
+      .split('"').join('')
+      .split('\n')
+      .join(`\n${tab0}${tab}`);
+    return newVal;
+  };
+  const printLikeObj = (content, tab = '') => `{${content}\n${tab}}`;
+
+  const renderState = (arr, depth = 0) => {
+    const tab = ' '.repeat(depth * spaceNumber);
+    const valFromArr = (val, indent) => printLikeObj(renderState(val, depth + 1), `${tab0}${indent}`);
+
+    return arr.map(({ name, value, stat }) => {
+      const isArr = value instanceof Array;
+      const propValue = (isArr) ? valFromArr(value, tab) : myStringify(value, tab);
+      return `\n${tab}${statusToStr[stat]}${name}: ${propValue}`;
+    }).join('');
+  };
+
+  return printLikeObj(renderState(makeState(objBefore, objAfter)));
 };
 
 program
