@@ -13,19 +13,19 @@ const getUpdStr = (path, val1, val2) => `${getTemplate(path, 'updated')}. From $
 const showAsPlain = (arr, path = '') => {
   const set = new Set();
   const newArr = [];
-  arr.forEach(({ name, value, stat }) => {
+  arr.forEach(({ name, value, status }) => {
     let newVal = '';
     const newPath = (path) ? `${path}.${name}` : `${name}`;
-    const updEl = arr.filter((other) => (other.name === name) && (other.stat !== stat))[0];
+    const updEl = arr.filter((other) => (other.name === name) && (other.status !== status))[0];
     if (value instanceof Array) {
       newVal = showAsPlain(value, newPath);
     } else if (updEl) {
-      newVal = (stat === 'del') ? getUpdStr(newPath, value, updEl.value) : getUpdStr(newPath, updEl.value, value);
-    } else if (stat === 'del') {
+      newVal = (status === 'del') ? getUpdStr(newPath, value, updEl.value) : getUpdStr(newPath, updEl.value, value);
+    } else if (status === 'del') {
       newVal = getDelStr(newPath);
-    } else if (stat === 'add') {
+    } else if (status === 'add') {
       newVal = getAddStr(newPath, value);
-    } else if (stat === 'same') {
+    } else if (status === 'same') {
       return;
     }
     set.add(newVal);

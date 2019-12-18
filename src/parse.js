@@ -4,9 +4,9 @@ import path from 'path';
 import ini from 'ini';
 
 const extToObj = {
-  '.yml': (str) => yaml.safeLoad(str),
-  '.json': (str) => JSON.parse(str),
-  '.ini': (str) => ini.parse(str),
+  '.yml': yaml.safeLoad,
+  '.json': JSON.parse,
+  '.ini': ini.parse,
 };
 
 export default (filePath) => {
