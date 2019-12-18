@@ -3,8 +3,15 @@
 import program from 'commander';
 import _ from 'lodash';
 import parse from './parse';
+import showAsJson from './formatters/showAsJson';
+import showAsPlain from './formatters/showAsPlain';
 
-const diff = (path1, path2) => {
+const optToFormatter = {
+  plain: showAsPlain,
+  json: showAsJson,
+};
+
+const diff = (path1, path2, format = 'json') => {
   const objBefore = parse(path1);
   const objAfter = parse(path2);
 
@@ -40,39 +47,17 @@ const diff = (path1, path2) => {
 
     return [..._.flatten(propsCommon), ...propsDelited, ...propsAdded];
   };
-  //------------------------------------------------------------------------------
-  const spaceNumber = 4;
-  const tab0 = ' '.repeat(spaceNumber);
-  const statusToStr = { del: '  - ', add: '  + ', same: tab0 };
-
-  const myStringify = (val, tab) => {
-    const newVal = JSON.stringify(val, null, spaceNumber)
-      .split('"').join('')
-      .split('\n')
-      .join(`\n${tab0}${tab}`);
-    return newVal;
-  };
-  const printLikeObj = (content, tab = '') => `{${content}\n${tab}}`;
-
-  const renderState = (arr, depth = 0) => {
-    const tab = ' '.repeat(depth * spaceNumber);
-    const valFromArr = (val, indent) => printLikeObj(renderState(val, depth + 1), `${tab0}${indent}`);
-
-    return arr.map(({ name, value, stat }) => {
-      const isArr = value instanceof Array;
-      const propValue = (isArr) ? valFromArr(value, tab) : myStringify(value, tab);
-      return `\n${tab}${statusToStr[stat]}${name}: ${propValue}`;
-    }).join('');
-  };
-
-  return printLikeObj(renderState(makeState(objBefore, objAfter)));
+  return optToFormatter[format](makeState(objBefore, objAfter));
 };
 
 program
   .arguments('<firstConfig>, <secondConfig>')
   .option('-V, --version', 'output the version number')
   .option('-f, --format [type]', 'Output format')
-  .action((firstConfig, secondConfig) => console.log(diff(firstConfig, secondConfig)));
+  .action((firstConfig, secondConfig) => {
+    const formatPrinted = program.format || 'json';
+    console.log(diff(firstConfig, secondConfig, formatPrinted));
+  });
 program.on('--help', () => {
   console.log('\nCompares two configuration files and shows a difference.');
 });
