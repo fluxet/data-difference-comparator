@@ -1,5 +1,5 @@
 const spaceNumber = 4;
-const modifyState = (arr) => arr.map((el) => ((el.value instanceof Array)
+const modifyState = (arr) => arr.map((el) => ((el.status === 'container')
   ? { name: el.name, value: modifyState(el.value) }
   : el));
 

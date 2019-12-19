@@ -11,27 +11,24 @@ const getAddStr = (path, val) => `${getTemplate(path, 'added')} with value ${che
 const getUpdStr = (path, val1, val2) => `${getTemplate(path, 'updated')}. From ${checkVal(val1)} to ${checkVal(val2)}`;
 
 const showAsPlain = (arr, path = '') => {
-  const set = new Set();
-  const newArr = [];
-  arr.forEach(({ name, value, status }) => {
-    let newVal = '';
+  if (!(arr instanceof Array)) { return ''; }
+
+  const propRaws = arr.map(({ name, value, status }) => {
     const newPath = (path) ? `${path}.${name}` : `${name}`;
     const updEl = arr.filter((other) => (other.name === name) && (other.status !== status))[0];
-    if (value instanceof Array) {
-      newVal = showAsPlain(value, newPath);
-    } else if (updEl) {
-      newVal = (status === 'del') ? getUpdStr(newPath, value, updEl.value) : getUpdStr(newPath, updEl.value, value);
-    } else if (status === 'del') {
-      newVal = getDelStr(newPath);
-    } else if (status === 'add') {
-      newVal = getAddStr(newPath, value);
-    } else if (status === 'same') {
-      return;
-    }
-    set.add(newVal);
-  });
-  set.forEach((el) => newArr.push(el));
-  return _.flatten(newArr).join('\n');
+
+    const statusToStr = {
+      same: '',
+      container: showAsPlain(value, newPath),
+      del: (updEl) ? getUpdStr(newPath, value, updEl.value) : getDelStr(newPath),
+      add: (updEl) ? '' : getAddStr(newPath, value),
+    };
+    return statusToStr[status];
+  })
+    .filter((el) => el !== '');
+
+  const result = _.flatten(propRaws).join('\n');
+  return result;
 };
 
 export default showAsPlain;

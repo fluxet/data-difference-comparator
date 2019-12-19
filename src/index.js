@@ -21,6 +21,7 @@ const gendiff = (path1, path2, format = 'default') => {
     del: 'del',
     add: 'add',
     same: 'same',
+    container: 'container',
   };
   const propState = (name, value, status) => ({ name, value, status });
 
@@ -39,7 +40,7 @@ const gendiff = (path1, path2, format = 'default') => {
         return propState(key, obj1[key], statusDict.same);
       }
       if (_.isPlainObject(obj1[key]) && _.isPlainObject(obj2[key])) {
-        return propState(key, makeState(obj1[key], obj2[key]), statusDict.same);
+        return propState(key, makeState(obj1[key], obj2[key]), statusDict.container);
       }
       return [
         propState(key, obj1[key], statusDict.del),
