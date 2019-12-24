@@ -3,22 +3,28 @@ import diff from '../src';
 
 const dirPath = `${__dirname}/__fixtures__`;
 const getDiff = (fileBefore, fileAfter, format) => diff(`${dirPath}/${fileBefore}`, `${dirPath}/${fileAfter}`, format);
-const result = fs.readFileSync(`${dirPath}/result`, 'utf-8');
-const resultPlain = fs.readFileSync(`${dirPath}/result_plain`, 'utf-8');
-const resultJson = fs.readFileSync(`${dirPath}/result_json`, 'utf-8');
+let diffDefaultFormat;
+let diffPlainFormat;
+let diffJsonFormat;
+
+beforeEach(() => {
+  diffDefaultFormat = fs.readFileSync(`${dirPath}/diffDefaultFormat`, 'utf-8');
+  diffPlainFormat = fs.readFileSync(`${dirPath}/diffPlainFormat`, 'utf-8');
+  diffJsonFormat = fs.readFileSync(`${dirPath}/diffJsonFormat`, 'utf-8');
+});
 
 test('json', () => {
-  expect(getDiff('before.json', 'after.json')).toEqual(result);
+  expect(getDiff('before.json', 'after.json')).toEqual(diffDefaultFormat);
 });
 test('yaml', () => {
-  expect(getDiff('before.yml', 'after.yml')).toEqual(result);
+  expect(getDiff('before.yml', 'after.yml')).toEqual(diffDefaultFormat);
 });
 test('ini', () => {
-  expect(getDiff('before.ini', 'after.ini')).toEqual(result);
+  expect(getDiff('before.ini', 'after.ini')).toEqual(diffDefaultFormat);
 });
-test('show as plain', () => {
-  expect(getDiff('before.ini', 'after.ini', 'plain')).toEqual(resultPlain);
+test('render as plain', () => {
+  expect(getDiff('before.ini', 'after.ini', 'plain')).toEqual(diffPlainFormat);
 });
-test('show as json', () => {
-  expect(getDiff('before.ini', 'after.ini', 'json')).toEqual(resultJson);
+test('render as json', () => {
+  expect(getDiff('before.ini', 'after.ini', 'json')).toEqual(diffJsonFormat);
 });
