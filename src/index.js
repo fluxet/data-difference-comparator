@@ -1,21 +1,25 @@
 #!/usr/bin/env node
 
+import fs from 'fs';
+import path from 'path';
 import program from 'commander';
 import _ from 'lodash';
 import parse from './parse';
-import showAsJson from './formatters/showAsJson';
-import showAsPlain from './formatters/showAsPlain';
-import showAsDefault from './formatters/showAsDefault';
+import render from './formatters';
 
-const formattersDict = {
-  plain: showAsPlain,
-  json: showAsJson,
-  default: showAsDefault,
+
+const prepareData = (filePath) => {
+  const extToFormat = {
+    '.yml': 'yaml',
+    '.json': 'json',
+    '.ini': 'ini',
+  };
+  return [fs.readFileSync(filePath, 'utf-8'), extToFormat[path.extname(filePath)]];
 };
 
 const gendiff = (path1, path2, format = 'default') => {
-  const objBefore = parse(path1);
-  const objAfter = parse(path2);
+  const objBefore = parse(...prepareData(path1));
+  const objAfter = parse(...prepareData(path2));
 
   const statusDict = {
     del: 'del',
@@ -31,7 +35,7 @@ const gendiff = (path1, path2, format = 'default') => {
 
     const keysDelited = _.difference(keys1, keys2);
     const keysAdded = _.difference(keys2, keys1);
-    const keysCommon = _.difference(keys1, [...keysDelited, ...keysAdded]);
+    const keysCommon = _.intersection(keys1, keys2);
 
     const propsDelited = keysDelited.map((key) => propState(key, obj1[key], statusDict.del));
     const propsAdded = keysAdded.map((key) => propState(key, obj2[key], statusDict.add));
@@ -50,7 +54,7 @@ const gendiff = (path1, path2, format = 'default') => {
 
     return [..._.flatten(propsCommon), ...propsDelited, ...propsAdded];
   };
-  return formattersDict[format](makeState(objBefore, objAfter));
+  return render(format)(makeState(objBefore, objAfter));
 };
 
 program
