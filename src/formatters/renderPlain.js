@@ -5,30 +5,32 @@ const checkVal = (val) => {
   if (typeof (val) === 'string') { return `'${val}'`; }
   return val;
 };
-const getTemplate = (path, changeStat) => `Property ${path} was ${changeStat}`;
-const getDelStr = (path) => getTemplate(path, 'removed');
-const getAddStr = (path, val) => `${getTemplate(path, 'added')} with value ${checkVal(val)}`;
-const getUpdStr = (path, val1, val2) => `${getTemplate(path, 'updated')}. From ${checkVal(val1)} to ${checkVal(val2)}`;
+const getTemplate = (path, typeOfChange) => `Property ${path} was ${typeOfChange}`;
+const getDelitedRaw = (path) => getTemplate(path, 'removed');
+const getAddedRaw = (path, val) => `${getTemplate(path, 'added')} with value ${checkVal(val)}`;
+const getUpdatedRaw = (path, val1, val2) => `${getTemplate(path, 'updated')}. From ${checkVal(val1)} to ${checkVal(val2)}`;
 
-const showAsPlain = (arr, path = '') => {
-  if (!(arr instanceof Array)) { return ''; }
+const renderAsPlain = (items, path = '') => {
+  if (!(items instanceof Array)) { return ''; }
 
-  const propRaws = arr.map(({ name, value, status }) => {
+  const plainItems = items.map(({ name, value, status }) => {
     const newPath = (path) ? `${path}.${name}` : `${name}`;
-    const updEl = arr.filter((other) => (other.name === name) && (other.status !== status))[0];
+    const updatedItem = items
+      .filter((other) => (other.name === name) && (other.status !== status))[0];
 
-    const statusToStr = {
+    const statusToRaw = {
       same: '',
-      container: showAsPlain(value, newPath),
-      del: (updEl) ? getUpdStr(newPath, value, updEl.value) : getDelStr(newPath),
-      add: (updEl) ? '' : getAddStr(newPath, value),
+      container: renderAsPlain(value, newPath),
+      delited: (updatedItem)
+        ? getUpdatedRaw(newPath, value, updatedItem.value)
+        : getDelitedRaw(newPath),
+      added: (updatedItem) ? '' : getAddedRaw(newPath, value),
     };
-    return statusToStr[status];
+    return statusToRaw[status];
   })
-    .filter((el) => el !== '');
+    .filter((item) => item !== '');
 
-  const result = _.flatten(propRaws).join('\n');
-  return result;
+  return _.flatten(plainItems).join('\n');
 };
 
-export default showAsPlain;
+export default renderAsPlain;

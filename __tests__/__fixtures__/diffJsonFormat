@@ -8,16 +8,21 @@
                 "status": "same"
             },
             {
+                "name": "setting2",
+                "value": "200",
+                "status": "delited"
+            },
+            {
                 "name": "setting3",
                 "value": true,
-                "status": "del"
+                "status": "delited"
             },
             {
                 "name": "setting3",
                 "value": {
                     "key": "value"
                 },
-                "status": "add"
+                "status": "added"
             },
             {
                 "name": "setting6",
@@ -30,31 +35,26 @@
                     {
                         "name": "ops",
                         "value": "vops",
-                        "status": "add"
+                        "status": "added"
                     }
                 ]
             },
             {
-                "name": "setting2",
-                "value": "200",
-                "status": "del"
-            },
-            {
                 "name": "follow",
                 "value": false,
-                "status": "add"
+                "status": "added"
             },
             {
                 "name": "setting4",
                 "value": "blah blah",
-                "status": "add"
+                "status": "added"
             },
             {
                 "name": "setting5",
                 "value": {
                     "key5": "value5"
                 },
-                "status": "add"
+                "status": "added"
             }
         ]
     },
@@ -64,12 +64,12 @@
             {
                 "name": "baz",
                 "value": "bas",
-                "status": "del"
+                "status": "delited"
             },
             {
                 "name": "baz",
                 "value": "bars",
-                "status": "add"
+                "status": "added"
             },
             {
                 "name": "foo",
@@ -81,12 +81,12 @@
                 "value": {
                     "key": "value"
                 },
-                "status": "del"
+                "status": "delited"
             },
             {
                 "name": "nest",
                 "value": "str",
-                "status": "add"
+                "status": "added"
             }
         ]
     },
@@ -95,13 +95,13 @@
         "value": {
             "abc": "12345"
         },
-        "status": "del"
+        "status": "delited"
     },
     {
         "name": "group3",
         "value": {
             "fee": "100500"
         },
-        "status": "add"
+        "status": "added"
     }
 ]

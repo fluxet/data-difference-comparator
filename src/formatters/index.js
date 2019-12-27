@@ -1,11 +1,11 @@
 import renderJson from './renderJson';
 import renderPlain from './renderPlain';
-import renderDefault from './renderDefault';
+import renderMarker from './renderMarker';
 
-const formattersDict = {
+const formattersDictionary = {
   plain: renderPlain,
   json: renderJson,
-  default: renderDefault,
+  marker: renderMarker,
 };
 
-export default (format) => formattersDict[format];
+export default (format) => formattersDictionary[format];
