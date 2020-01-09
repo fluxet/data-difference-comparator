@@ -15,16 +15,17 @@ const renderAsPlain = (items, path = '') => {
 
   const plainItems = items.map(({ name, value, status }) => {
     const newPath = (path) ? `${path}.${name}` : `${name}`;
+
     const updatedItem = items
-      .filter((other) => (other.name === name) && (other.status !== status))[0];
+      .filter((other) => (other.name === name) && (other.status === 'updated'))[0];
 
     const statusToRaw = {
       same: '',
+      updated: '',
       container: renderAsPlain(value, newPath),
-      delited: (updatedItem)
-        ? getUpdatedRaw(newPath, value, updatedItem.value)
-        : getDelitedRaw(newPath),
-      added: (updatedItem) ? '' : getAddedRaw(newPath, value),
+      origin: getUpdatedRaw(newPath, value, (updatedItem) ? updatedItem.value : null),
+      delited: getDelitedRaw(newPath),
+      added: getAddedRaw(newPath, value),
     };
     return statusToRaw[status];
   })

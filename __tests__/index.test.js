@@ -1,5 +1,5 @@
 import fs from 'fs';
-import diff from '../src';
+import diff from '../src/gendiff';
 
 const dirPath = `${__dirname}/__fixtures__`;
 const getDiff = (fileBefore, fileAfter, format) => diff(`${dirPath}/${fileBefore}`, `${dirPath}/${fileAfter}`, format);

@@ -1,7 +1,12 @@
 const spaceNumber = 4;
 const tab0 = ' '.repeat(spaceNumber);
 const statusToMarker = {
-  delited: '  - ', added: '  + ', same: tab0, container: tab0,
+  delited: '  - ',
+  added: '  + ',
+  origin: '  - ',
+  updated: '  + ',
+  same: tab0,
+  container: tab0,
 };
 
 const customStringify = (val, tab) => {
