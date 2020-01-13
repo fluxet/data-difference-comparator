@@ -1,10 +1,10 @@
 {
-  "name": "diffinder",
+  "name": "gendiff",
   "version": "1.0.0",
   "description": "finds a difference in files",
-  "main": "dist/gendiff.js",
+  "main": "dist/index.js",
   "bin": {
-    "gendiff": "dist/gendiff.js"
+    "gendiff": "dist/index.js"
   },
   "dependencies": {
     "commander": "^4.0.1",
