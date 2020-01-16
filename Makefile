@@ -2,7 +2,7 @@ install:
 	npm install
 
 start:
-	npx babel-node 'src/index.js' $(ATTR)
+	npx babel-node 'src/api.js' $(ATTR)
 
 publish:
 	npm publish --dry-run
