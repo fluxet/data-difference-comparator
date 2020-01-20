@@ -12,13 +12,13 @@ const getUpdatedRaw = (path, val1, val2) => `${getTemplate(path, 'updated')}. Fr
 
 const renderAsPlain = (items, path = '') => {
   const raws = items.map(({
-    name, value, children, status,
+    name, value, compositeValueOnTimeline, children, status,
   }) => {
     const newPath = (path) ? `${path}.${name}` : `${name}`;
 
     switch (status) {
       case 'parent': return renderAsPlain(children, newPath);
-      case 'updated': return getUpdatedRaw(newPath, value.before, value.after);
+      case 'updated': return getUpdatedRaw(newPath, compositeValueOnTimeline.before, compositeValueOnTimeline.after);
       case 'delited': return getDelitedRaw(newPath);
       case 'added': return getAddedRaw(newPath, value);
       default: return '';

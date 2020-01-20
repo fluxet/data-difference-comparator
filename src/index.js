@@ -20,6 +20,9 @@ const statusDictionary = {
   updated: 'updated',
 };
 const buildStateItem = (name, value, status) => ({ name, value, status });
+const buildStateUpdatedItem = (name, compositeValueOnTimeline, status) => ({
+  name, compositeValueOnTimeline, status,
+});
 const buildStateParent = (name, children) => ({ name, children, status: statusDictionary.parent });
 
 const makeState = (object1, object2) => {
@@ -45,11 +48,11 @@ const makeState = (object1, object2) => {
       const children2 = value2;
       return buildStateParent(key, makeState(children1, children2));
     }
-    const updatedValue = {
+    const compositeValueOnTimeline = {
       before: value1,
       after: value2,
     };
-    return buildStateItem(key, updatedValue, statusDictionary.updated);
+    return buildStateUpdatedItem(key, compositeValueOnTimeline, statusDictionary.updated);
   });
   return stateItems;
 };
