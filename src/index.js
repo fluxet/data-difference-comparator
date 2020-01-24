@@ -13,7 +13,7 @@ const getContent = (filePath) => {
 const getExt = (filePath) => path.extname(filePath).slice(1);
 
 const statusDictionary = {
-  delited: 'delited',
+  deleted: 'deleted',
   added: 'added',
   same: 'same',
   parent: 'parent',
@@ -35,7 +35,7 @@ const makeState = (object1, object2) => {
     const value2 = object2[key];
 
     if (!_.has(object2, key)) {
-      return buildStateItem(key, value1, statusDictionary.delited);
+      return buildStateItem(key, value1, statusDictionary.deleted);
     }
     if (!_.has(object1, key)) {
       return buildStateItem(key, value2, statusDictionary.added);

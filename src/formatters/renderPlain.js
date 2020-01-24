@@ -6,7 +6,7 @@ const renderValue = (val) => {
   return val;
 };
 const getTemplate = (path, typeOfChange) => `Property ${path} was ${typeOfChange}`;
-const getDelitedRaw = (path) => getTemplate(path, 'removed');
+const getdeletedRaw = (path) => getTemplate(path, 'removed');
 const getAddedRaw = (path, val) => `${getTemplate(path, 'added')} with value ${renderValue(val)}`;
 const getUpdatedRaw = (path, val1, val2) => `${getTemplate(path, 'updated')}. From ${renderValue(val1)} to ${renderValue(val2)}`;
 
@@ -16,13 +16,20 @@ const renderAsPlain = (items, path = '') => {
   }) => {
     const newPath = (path) ? `${path}.${name}` : `${name}`;
 
-    switch (status) {
-      case 'parent': return renderAsPlain(children, newPath);
-      case 'updated': return getUpdatedRaw(newPath, compositeValueOnTimeline.before, compositeValueOnTimeline.after);
-      case 'delited': return getDelitedRaw(newPath);
-      case 'added': return getAddedRaw(newPath, value);
-      default: return '';
+    if (status === 'parent') {
+      return renderAsPlain(children, newPath);
     }
+    if (status === 'updated') {
+      return getUpdatedRaw(newPath,
+        compositeValueOnTimeline.before, compositeValueOnTimeline.after);
+    }
+    if (status === 'deleted') {
+      return getdeletedRaw(newPath);
+    }
+    if (status === 'added') {
+      return getAddedRaw(newPath, value);
+    }
+    return '';
   });
   return _.flatten(raws).filter((raw) => raw).join('\n');
 };
