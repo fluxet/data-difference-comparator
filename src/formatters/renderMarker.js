@@ -7,6 +7,7 @@ const marker = {
   plus: '  + ',
   minus: '  - ',
   empty: tab0,
+  unexpected: '  ! ',
 };
 
 const renderObj = (val, tab) => {
@@ -24,24 +25,15 @@ const renderList = (list, tab = '') => {
   }) => {
     const getTemplate = (mark, val) => `${tab}${mark}${name}: ${val}`;
 
-    if (status === 'added') {
-      return getTemplate(marker.plus, renderValue(value, tab));
+    switch (status) {
+      case 'added': return getTemplate(marker.plus, renderValue(value, tab));
+      case 'deleted': return getTemplate(marker.minus, renderValue(value, tab));
+      case 'same': return getTemplate(marker.empty, renderValue(value, tab));
+      case 'updated': return `${getTemplate(marker.minus, renderValue(compositeValueOnTimeline.before, tab))}\n${getTemplate(marker.plus, renderValue(compositeValueOnTimeline.after, tab))}`;
+      case 'parent': return `${tab}${marker.empty}${name}: ${renderList(children, `${tab0}${tab}`)}`;
+      default: return `${tab}${marker.unexpected}${name} has unexpected status "${status}"`;
     }
-    if (status === 'deleted') {
-      return getTemplate(marker.minus, renderValue(value, tab));
-    }
-    if (status === 'same') {
-      return getTemplate(marker.empty, renderValue(value, tab));
-    }
-    if (status === 'updated') {
-      return `${getTemplate(marker.minus, renderValue(compositeValueOnTimeline.before, tab))}\n${getTemplate(marker.plus, renderValue(compositeValueOnTimeline.after, tab))}`;
-    }
-    if (status === 'parent') {
-      return `${tab}${marker.empty}${name}: ${renderList(children, `${tab0}${tab}`)}`;
-    }
-    return '';
   };
-
   const raws = list.map((item) => renderItem(item, tab));
   return `{\n${raws.join('\n')}\n${tab}}`;
 };

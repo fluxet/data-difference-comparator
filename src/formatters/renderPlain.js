@@ -9,6 +9,7 @@ const getTemplate = (path, typeOfChange) => `Property ${path} was ${typeOfChange
 const getdeletedRaw = (path) => getTemplate(path, 'removed');
 const getAddedRaw = (path, val) => `${getTemplate(path, 'added')} with value ${renderValue(val)}`;
 const getUpdatedRaw = (path, val1, val2) => `${getTemplate(path, 'updated')}. From ${renderValue(val1)} to ${renderValue(val2)}`;
+const getUnexpectedRaw = (path, status) => `${path} has unexpected status ${status}`;
 
 const renderAsPlain = (items, path = '') => {
   const raws = items.map(({
@@ -16,20 +17,21 @@ const renderAsPlain = (items, path = '') => {
   }) => {
     const newPath = (path) ? `${path}.${name}` : `${name}`;
 
-    if (status === 'parent') {
-      return renderAsPlain(children, newPath);
+    switch (status) {
+      case 'parent':
+        return renderAsPlain(children, newPath);
+      case 'updated':
+        return getUpdatedRaw(newPath,
+          compositeValueOnTimeline.before, compositeValueOnTimeline.after);
+      case 'deleted':
+        return getdeletedRaw(newPath);
+      case 'added':
+        return getAddedRaw(newPath, value);
+      case 'same':
+        return '';
+      default:
+        return getUnexpectedRaw(newPath, status);
     }
-    if (status === 'updated') {
-      return getUpdatedRaw(newPath,
-        compositeValueOnTimeline.before, compositeValueOnTimeline.after);
-    }
-    if (status === 'deleted') {
-      return getdeletedRaw(newPath);
-    }
-    if (status === 'added') {
-      return getAddedRaw(newPath, value);
-    }
-    return '';
   });
   return _.flatten(raws).filter((raw) => raw).join('\n');
 };
