@@ -1,34 +1,49 @@
+import _ from 'lodash';
+
 const spaceNumber = 4;
 const tab0 = ' '.repeat(spaceNumber);
-const statusToMarker = {
-  delited: '  - ',
-  added: '  + ',
-  origin: '  - ',
-  updated: '  + ',
-  same: tab0,
-  container: tab0,
+
+const marker = {
+  plus: '  + ',
+  minus: '  - ',
+  empty: tab0,
 };
 
-const customStringify = (val, tab) => {
+const renderObj = (val, tab) => {
   const newValue = JSON.stringify(val, null, spaceNumber)
     .split('"').join('').split('\n')
     .join(`\n${tab0}${tab}`);
   return newValue;
 };
 
-const printLikeObject = (content, tab = '') => `{${content}\n${tab}}`;
+const renderValue = (val, tab) => ((_.isPlainObject(val)) ? renderObj(val, tab) : val);
 
-const renderState = (items, depth = 0) => {
-  const tab = ' '.repeat(depth * spaceNumber);
-  const valFromContainer = (val, indent) => printLikeObject(renderState(val, depth + 1), `${tab0}${indent}`);
+const renderList = (list, tab = '') => {
+  const renderItem = ({
+    name, value, children, status, compositeValueOnTimeline,
+  }) => {
+    const getTemplate = (mark, val) => `${tab}${mark}${name}: ${val}`;
 
-  return items.map(({ name, value, status }) => {
-    const isContainer = status === 'container';
-    const valueRendered = (isContainer)
-      ? valFromContainer(value, tab)
-      : customStringify(value, tab);
-    return `\n${tab}${statusToMarker[status]}${name}: ${valueRendered}`;
-  }).join('');
+    if (status === 'added') {
+      return getTemplate(marker.plus, renderValue(value, tab));
+    }
+    if (status === 'deleted') {
+      return getTemplate(marker.minus, renderValue(value, tab));
+    }
+    if (status === 'same') {
+      return getTemplate(marker.empty, renderValue(value, tab));
+    }
+    if (status === 'updated') {
+      return `${getTemplate(marker.minus, renderValue(compositeValueOnTimeline.before, tab))}\n${getTemplate(marker.plus, renderValue(compositeValueOnTimeline.after, tab))}`;
+    }
+    if (status === 'parent') {
+      return `${tab}${marker.empty}${name}: ${renderList(children, `${tab0}${tab}`)}`;
+    }
+    return '';
+  };
+
+  const raws = list.map((item) => renderItem(item, tab));
+  return `{\n${raws.join('\n')}\n${tab}}`;
 };
 
-export default (state) => printLikeObject(renderState(state));
+export default renderList;

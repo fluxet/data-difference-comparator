@@ -4,7 +4,7 @@
   "description": "finds a difference in files",
   "main": "dist/index.js",
   "bin": {
-    "gendiff": "dist/index.js"
+    "gendiff": "dist/cli.js"
   },
   "dependencies": {
     "commander": "^4.0.1",

@@ -1,8 +1,8 @@
 import fs from 'fs';
-import diff from '../src/gendiff';
+import diff from '../src';
 
 const dirPath = `${__dirname}/__fixtures__`;
-const getDiff = (fileBefore, fileAfter, format) => diff(`${dirPath}/${fileBefore}`, `${dirPath}/${fileAfter}`, format);
+const getDiff = (fileNameBefore, fileNameAfter, format) => diff(`${dirPath}/${fileNameBefore}`, `${dirPath}/${fileNameAfter}`, format);
 let diffMarkerFormat;
 let diffPlainFormat;
 let diffJsonFormat;
