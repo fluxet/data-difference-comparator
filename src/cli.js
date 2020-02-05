@@ -5,13 +5,10 @@ import gendiff from '.';
 
 program
   .arguments('<firstConfig>, <secondConfig>')
+  .description('Compares two configuration files and shows a difference.')
   .option('-V, --version', 'output the version number')
-  .option('-f, --format [type]', 'Output format')
+  .option('-f, --format [type]', 'Output format', 'marker')
   .action((firstConfig, secondConfig) => {
-    const formatPrinted = program.format || 'marker';
-    console.log(gendiff(firstConfig, secondConfig, formatPrinted));
+    console.log(gendiff(firstConfig, secondConfig, program.format));
   });
-program.on('--help', () => {
-  console.log('\nCompares two configuration files and shows a difference.');
-});
 program.parse(process.argv);
