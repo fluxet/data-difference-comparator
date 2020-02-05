@@ -9,7 +9,6 @@ const getTemplate = (path, typeOfChange) => `Property ${path} was ${typeOfChange
 const getdeletedRaw = (path) => getTemplate(path, 'removed');
 const getAddedRaw = (path, val) => `${getTemplate(path, 'added')} with value ${renderValue(val)}`;
 const getUpdatedRaw = (path, val1, val2) => `${getTemplate(path, 'updated')}. From ${renderValue(val1)} to ${renderValue(val2)}`;
-const getUnexpectedRaw = (path, status) => `${path} has unexpected status ${status}`;
 
 const renderAsPlain = (items, path = '') => {
   const raws = items.map(({
@@ -28,9 +27,9 @@ const renderAsPlain = (items, path = '') => {
       case 'added':
         return getAddedRaw(newPath, value);
       case 'same':
-        return '';
+        return null;
       default:
-        return getUnexpectedRaw(newPath, status);
+        throw new Error(`${newPath} has unknown status ${status}`);
     }
   });
   return _.flatten(raws).filter((raw) => raw).join('\n');
