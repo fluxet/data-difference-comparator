@@ -31,26 +31,26 @@ const makeState = (object1, object2) => {
 
   const allKeys = _.union(keys1, keys2);
   const stateItems = allKeys.map((key) => {
-    const value1 = object1[key];
-    const value2 = object2[key];
+    const content1 = object1[key];
+    const content2 = object2[key];
 
     if (!_.has(object2, key)) {
-      return buildStateItem(key, value1, statusDictionary.deleted);
+      return buildStateItem(key, content1, statusDictionary.deleted);
     }
     if (!_.has(object1, key)) {
-      return buildStateItem(key, value2, statusDictionary.added);
+      return buildStateItem(key, content2, statusDictionary.added);
     }
-    if (_.isEqual(value1, value2)) {
-      return buildStateItem(key, value1, statusDictionary.same);
+    if (_.isEqual(content1, content2)) {
+      return buildStateItem(key, content1, statusDictionary.same);
     }
-    if (_.isPlainObject(value1) && _.isPlainObject(value2)) {
-      const children1 = value1;
-      const children2 = value2;
+    if (_.isPlainObject(content1) && _.isPlainObject(content2)) {
+      const children1 = content1;
+      const children2 = content2;
       return buildStateParent(key, makeState(children1, children2));
     }
     const compositeValueOnTimeline = {
-      before: value1,
-      after: value2,
+      before: content1,
+      after: content2,
     };
     return buildStateUpdatedItem(key, compositeValueOnTimeline, statusDictionary.updated);
   });
